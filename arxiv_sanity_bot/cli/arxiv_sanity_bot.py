@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
 import time
+import asyncio
+import random
 
 import pandas as pd
 import pyshorteners
@@ -12,12 +14,16 @@ from arxiv_sanity_bot.config import (
     WINDOW_START,
     WINDOW_STOP,
     TIMEZONE,
+    SHORTEN_URL,
     ABSTRACT_CACHE_FILE,
+    INTRO_LINES,
+    OUTRO_LINES,
 )
 from arxiv_sanity_bot.events import InfoEvent, RetryableErrorEvent
 from arxiv_sanity_bot.models.chatGPT import ChatGPT
 from arxiv_sanity_bot.twitter.auth import TwitterOAuth1
 from arxiv_sanity_bot.twitter.send_tweet import send_tweet
+from arxiv_sanity_bot.discord.connection import DiscordConnection
 
 
 def bot():
@@ -33,13 +39,16 @@ def bot():
     # Summarize the top 10 papers
     summaries = _summarize_top_abstracts(abstracts, n=PAPERS_TO_SUMMARIZE)
 
-    # Send the tweets
-    oauth = TwitterOAuth1()
-    for s in summaries:
+    discord_connection = DiscordConnection()
 
-        send_tweet(s, auth=oauth)
+    @discord_connection.client.event
+    async def on_ready():
+        for s in summaries:
+            await discord_connection.send(s)
+            time.sleep(1)
+        await discord_connection.close()
 
-        time.sleep(1)
+    discord_connection.run()
 
     InfoEvent(msg="Bot finishing")
 
@@ -59,8 +68,11 @@ def _summarize_top_abstracts(abstracts, n):
 
         summary, short_url = _summarize_if_new(already_processed_df, row)
 
+        intro_line = random.choice(INTRO_LINES)
+        outro_line = random.choice(OUTRO_LINES)
+
         if summary is not None:
-            summaries.append(f"{short_url} {summary}")
+            summaries.append(f"**{intro_line}**\n\n{summary}\n\n{outro_line} {short_url}")
 
             processed.append(row)
 
@@ -97,22 +109,25 @@ def _summarize_if_new(already_processed_df, row):
 
         url = f"https://arxiv-sanity-lite.com/?rank=pid&pid={row['arxiv']}"
 
-        for _ in range(10):
-            # Remove the 'http://' part which is useless and consumes characters
-            # for nothing
-            try:
-                short_url = s.tinyurl.short(url).split("//")[-1]
-            except requests.exceptions.Timeout as e:
-                RetryableErrorEvent(
-                    msg="Could not shorten URL", context={"url": url, "error": str(e)}
-                )
-                time.sleep(10)
-                continue
-            else:
-                break
+        if not SHORTEN_URL:
+            short_url = url
         else:
-            InfoEvent("Could not shorten URL. Dropping it from the tweet!")
-            short_url = ""
+            for _ in range(10):
+                # Remove the 'http://' part which is useless and consumes characters
+                # for nothing
+                try:
+                    short_url = s.tinyurl.short(url).split("//")[-1]
+                except requests.exceptions.Timeout as e:
+                    RetryableErrorEvent(
+                        msg="Could not shorten URL", context={"url": url, "error": str(e)}
+                    )
+                    time.sleep(10)
+                    continue
+                else:
+                    break
+            else:
+                InfoEvent("Could not shorten URL. Dropping it from the tweet!")
+                short_url = ""
 
     return summary, short_url
 
