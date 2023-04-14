@@ -2,8 +2,9 @@ name: Run Arxiv Sanity Bot
 
 on:
   schedule:
-    # Run every 12 hours at 15 min past the hour
-    - cron: "15 */12 * * *"
+    # Run every hour
+    - cron: "13 * * * *"
+
   workflow_dispatch:
 
 jobs:
@@ -12,6 +13,17 @@ jobs:
     environment: production
 
     steps:
+    - name: Randomly quit workflow
+      run: |
+        # Generate a random number between 1 and 9
+        rand=$(($RANDOM % 9 + 1))
+        
+        # If the number is not 1, exit without doing anything
+        if [ "$rand" -ne 1 ]; then
+          echo "Skipping workflow execution."
+          exit 0
+        fi
+
     - name: Check out repository
       uses: actions/checkout@v3
 
