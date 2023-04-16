@@ -17,6 +17,7 @@ jobs:
       run: |
         # Generate a random number between 1 and 9
         rand=$(($RANDOM % 9 + 1))
+        echo $rand
         
         # If the number is not 1, exit without doing anything
         if [ "$rand" -ne 1 ]; then
