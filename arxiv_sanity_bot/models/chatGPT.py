@@ -1,6 +1,7 @@
 from arxiv_sanity_bot.events import RetryableErrorEvent, FatalErrorEvent
 from arxiv_sanity_bot.models.model import LLM
 from arxiv_sanity_bot.config import CHATGPT_N_TRIALS, MESSAGE_TEXT_LENGTH
+import time
 import openai
 
 
@@ -14,7 +15,7 @@ class ChatGPT(LLM):
                 {
                     "role": "system",
                     "content": f"You are a discord chat bot. You can only answer with a maximum of "
-                               f"{MESSAGE_TEXT_LENGTH} characters. Answers should be casual and "
+                               f"{MESSAGE_TEXT_LENGTH-100} characters. Answers should be casual and "
                                f"engaging. They should easy to read and may include Discord's markup: "
                                f"use *word* for cursive and **word** for bold text.",
                 },
@@ -28,6 +29,7 @@ class ChatGPT(LLM):
                 model="gpt-3.5-turbo-0301",
                 messages=history,
             )
+            time.sleep(45)
 
             summary = r["choices"][0]["message"]["content"].strip()
 

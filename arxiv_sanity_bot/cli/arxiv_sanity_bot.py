@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import time
 import asyncio
 import random
-import time
 
 import pandas as pd
 import pyshorteners
@@ -107,7 +106,6 @@ def _summarize_if_new(already_processed_df, row):
         summary, short_url = None, None
     else:
         summary = chatGPT.summarize_abstract(row["abstract"])
-        time.sleep(30)
 
         url = f"https://arxiv-sanity-lite.com/?rank=pid&pid={row['arxiv']}"
 
