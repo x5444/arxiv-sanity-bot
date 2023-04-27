@@ -66,13 +66,13 @@ def _summarize_top_abstracts(abstracts, n):
     processed = []
     for i, row in abstracts.iloc[:n].iterrows():
 
-        summary, short_url = _summarize_if_new(already_processed_df, row)
+        title, summary, short_url = _summarize_if_new(already_processed_df, row)
 
         intro_line = random.choice(INTRO_LINES)
         outro_line = random.choice(OUTRO_LINES)
 
-        if summary is not None:
-            summaries.append(f"**{intro_line}**\n\n{summary}\n\n{outro_line} {short_url}")
+        if summary is not None and title is not None:
+            summaries.append(f"**{intro_line} *{title}***\n\n{summary}\n\n{outro_line} {short_url}")
 
             processed.append(row)
 
@@ -103,8 +103,9 @@ def _summarize_if_new(already_processed_df, row):
             f"Paper {row['arxiv']} was already processed in a previous run",
             context={"title": row["title"], "score": row["score"]},
         )
-        summary, short_url = None, None
+        title, summary, short_url = None, None, None
     else:
+        title = row["title"]
         summary = chatGPT.summarize_abstract(row["abstract"])
 
         url = f"https://arxiv-sanity-lite.com/?rank=pid&pid={row['arxiv']}"
@@ -129,7 +130,7 @@ def _summarize_if_new(already_processed_df, row):
                 InfoEvent("Could not shorten URL. Dropping it from the tweet!")
                 short_url = ""
 
-    return summary, short_url
+    return title, summary, short_url
 
 
 def _gather_abstracts():

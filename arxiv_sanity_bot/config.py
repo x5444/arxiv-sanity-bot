@@ -67,7 +67,7 @@ INTRO_LINES = [
     "Don't be a couch potato, read this paper instead:",
     "You'll thank me later for recommending this paper:",
     "Can't find anything interesting to read? This paper will change that:",
-    "Move over, Sherlock Holmes. This paper has all the clues:.",
+    "Move over, Sherlock Holmes. This paper has all the clues:",
     "Don't let your brain turn to mush. Read this paper:",
     "Feeling left behind? This paper will bring you up to speed:",
 ]
