@@ -36,7 +36,10 @@ jobs:
     - name: Cache parquet dataframe of processed abstracts
       uses: actions/cache@v3
       with:
-        key: arxiv-sanity-bot-cache
+        key: |
+          arxiv-sanity-bot-cache-${{ env.GITHUB_RUN_ID }}-${{ env.GITHUB_JOB }}-${{ env.GITHUB_RUN_NUMBER }}
+        restore-keys: |
+          arxiv-sanity-bot-cache
         path: |
           posted_abstracts.parquet
           ~/.cache/pip
