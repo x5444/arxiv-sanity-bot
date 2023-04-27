@@ -22,7 +22,7 @@ jobs:
         # If the number is not 1, exit without doing anything
         if [ "$rand" -ne 1 ]; then
           echo "Skipping workflow execution."
-          exit 1
+          #exit 1
         fi
 
     - name: Check out repository
