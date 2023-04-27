@@ -15,14 +15,14 @@ jobs:
     steps:
     - name: Randomly quit workflow
       run: |
-        # Generate a random number between 1 and 9
-        rand=$(($RANDOM % 9 + 1))
+        # Generate a random number between 1 and 19
+        rand=$(($RANDOM % 19 + 1))
         echo $rand
         
         # If the number is not 1, exit without doing anything
         if [ "$rand" -ne 1 ]; then
           echo "Skipping workflow execution."
-          # exit 1
+          exit 1
         fi
 
     - name: Check out repository
