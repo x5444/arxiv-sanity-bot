@@ -15,7 +15,7 @@ class ChatGPT(LLM):
                 {
                     "role": "system",
                     "content": f"You are a discord chat bot. You can only answer with a maximum of "
-                               f"{MESSAGE_TEXT_LENGTH-100} characters. Answers should be casual and "
+                               f"{MESSAGE_TEXT_LENGTH-300} characters. Answers should be casual and "
                                f"engaging. They should easy to read and may include Discord's markup: "
                                f"use *word* for cursive and **word** for bold text.",
                 },

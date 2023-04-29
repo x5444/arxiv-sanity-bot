@@ -16,7 +16,7 @@ SHORTEN_URL = False
 # The url length depens on the url shortener used. For tinyurl is 18 if
 # we remove https://
 URL_LENGTH = 20
-MESSAGE_TEXT_LENGTH = 500 - URL_LENGTH
+MESSAGE_TEXT_LENGTH = 800 - URL_LENGTH
 
 # How many times to try to send a tweet before failing
 TWITTER_N_TRIALS = 10
